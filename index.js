@@ -37,7 +37,7 @@ var styles = StyleSheet.create({
   absolute: {
     position: "absolute",
     top: 0,
-    bottom: -40,
+    bottom: 0,
     left: 0,
     right: 0
   }
@@ -433,7 +433,7 @@ var ModalBox = createReactClass({
       backdrop = (
         <TouchableWithoutFeedback onPress={this.props.backdropPressToClose ? this.close : null}>
           <Animated.View style={[styles.absolute, {opacity: this.state.backdropOpacity}]}>
-            <View style={[styles.absolute, {backgroundColor:this.props.backdropColor, opacity: this.props.backdropOpacity}]}/>
+            <View style={[styles.absolute, {backgroundColor:this.props.backdropColor, opacity: this.props.backdropOpacity, bottom: -34}]}/>
             {this.props.backdropContent || []}
           </Animated.View>
         </TouchableWithoutFeedback>

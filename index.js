@@ -161,11 +161,18 @@ var ModalBox = createReactClass({
     var keyboardFrame = evt.endCoordinates;
     this.keyboardHeight = this.state.containerHeight - keyboardFrame.screenY;
     this.keyboardHeight += 60;
-    this.updateKeyboard(0);
+    this.updateKeyboard(this.lastFocusOffset ? this.lastFocusOffset : 0);
   },
 
   updateKeyboard: function(focusOffset) {
-    this.state.keyboardOffset = this.keyboardHeight - focusOffset;
+    this.lastFocusOffset = focusOffset;
+    if(this.keyboardHeight) {
+      this.state.keyboardOffset = this.keyboardHeight - focusOffset;
+    }
+    else {
+      this.state.keyboardOffset = 0;
+    }
+
     this.animateOpen();
   },
 
@@ -436,7 +443,7 @@ var ModalBox = createReactClass({
       backdrop = (
         <TouchableWithoutFeedback onPress={this.props.backdropPressToClose ? this.close : null}>
           <Animated.View style={[styles.absolute, {opacity: this.state.backdropOpacity}]}>
-            <View style={[styles.absolute, {backgroundColor: this.props.backdropColor, opacity: this.props.backdropOpacity, bottom: -34}]}/>
+            <View style={[styles.absolute, {backgroundColor: this.props.backdropColor, opacity: this.props.backdropOpacity, top:-50, bottom: -34, zIndex: 100}]}/>
             {this.props.backdropContent || []}
           </Animated.View>
         </TouchableWithoutFeedback>
@@ -480,7 +487,7 @@ var ModalBox = createReactClass({
     if (!this.props.coverScreen) return content;
 
     return (
-      <Modal onRequestClose={() => this.close()} supportedOrientations={['landscape', 'portrait']} transparent visible={visible}>
+      <Modal onRequestClose={() => this.close()} supportedOrientations={['landscape', 'portrait']} transparent visible={visible} hardwareAccelerated={true}>
         {content}
       </Modal>
     );

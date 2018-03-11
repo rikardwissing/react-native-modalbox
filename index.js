@@ -85,7 +85,7 @@ var ModalBox = createReactClass({
       backButtonClose: false,
       easing: Easing.elastic(0.8),
       coverScreen: false,
-      keyboardTopOffset: Platform.OS == 'ios' ? 22 : 0
+      keyboardTopOffset: Platform.OS == 'ios' ? 0 : 0,
     };
   },
 
@@ -103,7 +103,7 @@ var ModalBox = createReactClass({
       containerHeight: screen.height,
       containerWidth: screen.width,
       isInitialized: false,
-      keyboardOffset: 0
+      keyboardOffset: 0,
     };
   },
 
@@ -157,10 +157,15 @@ var ModalBox = createReactClass({
   onKeyboardChange: function(evt) {
     if (!evt) return;
     if (!this.state.isOpen) return;
-    var keyboardFrame = evt.endCoordinates;
-    var keyboardHeight = this.state.containerHeight - keyboardFrame.screenY;
 
-    this.state.keyboardOffset = keyboardHeight;
+    var keyboardFrame = evt.endCoordinates;
+    this.keyboardHeight = this.state.containerHeight - keyboardFrame.screenY;
+    this.keyboardHeight += 60;
+    this.updateKeyboard(0);
+  },
+
+  updateKeyboard: function(focusOffset) {
+    this.state.keyboardOffset = this.keyboardHeight - focusOffset;
     this.animateOpen();
   },
 
@@ -233,12 +238,12 @@ var ModalBox = createReactClass({
     this.state.isAnimateOpen = true;
     if (this.props.onOpen) this.props.onOpen();
 
-
     requestAnimationFrame(() => {
       // Detecting modal position
       this.state.positionDest = this.calculateModalPosition(this.state.containerHeight - this.state.keyboardOffset, this.state.containerWidth);
+
       if (this.state.keyboardOffset && (this.state.positionDest < this.props.keyboardTopOffset)) {
-        this.state.positionDest = this.props.keyboardTopOffset;
+        //this.state.positionDest = this.props.keyboardTopOffset;
       }
       this.state.animOpen = Animated.timing(
         this.state.position,
@@ -389,10 +394,8 @@ var ModalBox = createReactClass({
     if(this.state.isOpen) {
       this.state.positionDest = this.calculateModalPosition(this.state.containerHeight - this.state.keyboardOffset, this.state.containerWidth);
       if (this.state.keyboardOffset && (this.state.positionDest < this.props.keyboardTopOffset)) {
-        this.state.positionDest = this.props.keyboardTopOffset;
+        //this.state.positionDest = this.props.keyboardTopOffset;
       }
-
-
 
       this.state.position.setValue(this.state.positionDest);
     }
@@ -433,7 +436,7 @@ var ModalBox = createReactClass({
       backdrop = (
         <TouchableWithoutFeedback onPress={this.props.backdropPressToClose ? this.close : null}>
           <Animated.View style={[styles.absolute, {opacity: this.state.backdropOpacity}]}>
-            <View style={[styles.absolute, {backgroundColor:this.props.backdropColor, opacity: this.props.backdropOpacity, bottom: -34}]}/>
+            <View style={[styles.absolute, {backgroundColor: this.props.backdropColor, opacity: this.props.backdropOpacity, bottom: -34}]}/>
             {this.props.backdropContent || []}
           </Animated.View>
         </TouchableWithoutFeedback>
